@@ -6,13 +6,13 @@
 
 //structure for data of user
 typedef struct pass {
-    char *username;
+    char username[20];
     int date, month, year;
     int idnum;
-    char *fname;
-    char *lname;
-    char *address;
-    char *accounttype;
+    char fname[20];
+    char lname[20];
+    char address[20];
+    char accounttype[20];
     char password[20];
 }user;
 
