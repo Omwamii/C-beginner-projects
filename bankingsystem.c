@@ -4,6 +4,9 @@
 #include <ctype.h>
 #include <conio.h>
 
+/**
+ * a simple banking system program with basic bank transactions
+*/
 //structure for data of user
 typedef struct pass {
     char username[20];
@@ -14,6 +17,7 @@ typedef struct pass {
     char address[20];
     char account_type[20];
     char password[20];
+    long money;
 }user;
 
 // Structure to keep track of money transfer
@@ -221,22 +225,22 @@ void display(char username[])
             //fmt screen
             printf("***************************");
             //fmt screen
-            printf("NAME..%s %s", u1.fname, u1.lname);
+            printf("NAME: %s %s", u1.fname, u1.lname);
  
             //fmt screen
-            printf("ID NUMBER..%d", u1.idnum);
+            printf("ID NUMBER: %d", u1.idnum);
  
             //fmt screen
-            printf("MOBILE NUMBER..%d", u1.mobile_no);
+            printf("MOBILE NUMBER: %d", u1.mobile_no);
  
             //fmt screen
-            printf("DATE OF BIRTH.. %d-%d-%d", u1.date, u1.month, u1.year);
+            printf("DATE OF BIRTH: %d-%d-%d", u1.date, u1.month, u1.year);
  
             //fmt screen
-            printf("ADDRESS..%s", u1.address);
+            printf("ADDRESS: %s", u1.address);
  
             //fmt screen
-            printf("ACCOUNT TYPE..%s", u1.account_type);
+            printf("ACCOUNT TYPE: %s", u1.account_type);
         }
     }
  
@@ -255,33 +259,81 @@ void display(char username[])
     printf(" 1....CHECK BALANCE");
     //fmt
 
-    printf(" 2....TRANSFER MONEY");
+    printf(" 2....DEPOSIT MONEY");
+
+    printf(" 3....TRANSFER MONEY");
     //fmt
 
-    printf(" 3....LOG OUT\n\n");
+    printf(" 4....LOG OUT\n\n");
     //fmt
 
-    printf(" 4....EXIT\n\n");
+    printf(" 5....EXIT\n\n");
  
-    printf(" ENTER YOUR CHOICES..");
+    printf(" ENTER YOUR CHOICES... ");
     scanf("%d", &choice);
  
     switch (choice) {
     case 1:
         checkbalance(username);
         break;
- 
+    
     case 2:
-        transfermoney();
-        break;
+        deposit(&u1);
  
     case 3:
+        transfer_money();
+        break;
+ 
+    case 4:
         logout();
         login(); //prompt for login after logout
         break;
  
-    case 4:
+    case 5:
+        system("cls");
+        printf("\t\t\t.......");
+        printf("\t\t\tGoodbye");
+        printf("\t\t\t.......");
         exit(0);
         break;
     }
 }
+
+void deposit(user *u)
+{
+    FILE *fp;
+    long amnt;
+    char current_amnt[32];
+    int cash_in = 0;
+    long offset; /* file offset to set to write new amount correclty*/
+
+    system("cls");
+
+    printf("Enter amount to deposit");
+    scanf("%lu", &amnt);
+
+    fp = fopen("file.txt", "r+");
+    if (fp == NULL) {
+        printf("Error opening file!\n");
+        exit(1);
+    }
+
+    while (fread(&u, sizeof(user), 1, fp))
+    {
+            u->money += amnt;
+            offset = -(long)(sizeof(u->money));
+            fseek(fp, offset, SEEK_CUR);
+            fwrite(&u->money, sizeof(u->money), 1, fp);
+            cash_in = 1;
+            break;
+    }
+    fclose(fp);
+
+    if (cash_in) {
+        printf("Deposit Successful! New balance: %ld\n", u->money);
+    } else {
+        printf("!!!! Error: Unable to deposit funds\n !!!!");
+    }
+}
+
+void transfer_money()
