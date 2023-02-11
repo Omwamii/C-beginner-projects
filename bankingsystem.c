@@ -337,3 +337,167 @@ void deposit(user *u)
 }
 
 void transfer_money()
+{
+     int i, j;
+    FILE *fp;
+    user u1;
+    char user_from[20];
+    char user_to[20];
+    system("cls");
+ 
+    // Opening file in read mode to
+    // read user's username
+    fp = fopen("accounts.txt", "rb");
+ 
+    //fmt
+    printf("---- TRANSFER MONEY ----");
+    //fmt
+    printf("========================");
+ 
+    //fmt
+    printf("FROM (your username).. ");
+    scanf("%s", &user_from);
+ 
+    //fmt
+    printf(" TO (username of person)..");
+    scanf("%s", &user_to);
+ 
+    // Checking for username if it
+    // is present in file or not
+    while (fread(&u1, sizeof(u1),
+                 1, fp))
+ 
+    {
+        if (strcmp(user_from,
+                   u1.username)
+            == 0) {
+            strcpy(m1.usernameto,
+                   u1.username);
+            strcpy(m1.userpersonfrom,
+                   usernamet);
+        }
+    }
+    //fmt
+    // Taking amount input
+    printf("ENTER THE AMOUNT TO BE TRANSFERRED..");
+    scanf("%d", &m1.money1);
+ 
+    // Writing to the file
+    fwrite(&m1, sizeof(m1),
+           1, fm);
+ 
+    //fmt
+    printf(
+        "--------------------------------------------------"
+        "--------------------------------------------");
+ 
+    //fmt
+    printf(
+        "--------------------------------------------------"
+        "--------------------------------------------");
+ 
+    //fmt
+    printf("transferring amount, Please wait..");
+ 
+    //fmt
+    for (i = 0; i < 70; i++) {
+        for (j = 0; j < 1200000; j++) {
+            j++;
+            j--;
+        }
+        printf("*");
+    }
+ 
+    //fmt
+    printf("AMOUNT SUCCESSFULLY TRANSFERRED....");
+    getchar();
+ 
+    // Close the files
+    fclose(fp);
+    fclose(fm);
+ 
+    // Function to return
+    // to the home screen
+    display(user_to); //?
+}
+
+void checkbalance(char username2[])
+{
+    system("cls");
+    FILE* fm;
+    struct money m1;
+    char ch;
+    int i = 1, summoney = 0;
+ 
+    // Opening amount file record
+    fm = fopen("mon.txt", "rb");
+ 
+    
+    //fmt
+    printf("==== BALANCE DASHBOARD ====");
+    //fmt
+    printf("***************************");
+    //fmt
+    printf("S no.");
+    //fmt
+    printf("TRANSACTION ID");
+    //fmt
+    printf("AMOUNT");
+ 
+    // Reading username to
+    // fetch the correct record
+    while (fread(&m1, sizeof(m1),
+                 1, fm)) {
+        if (strcmp(username2,
+                   m1.to)
+            == 0) {
+            //fmt
+            printf("%d", i);
+            i++;
+            //fmt
+            printf("%s", m1.from);
+ 
+            //fmt
+            printf("%d", m1.money1);
+            // Adding and
+            // finding total money
+            summoney = summoney + m1.money1;
+        }
+    }
+ 
+    //fmt
+    printf("TOTAL AMOUNT");
+ 
+    //fmt
+    printf("%d", summoney);
+ 
+    getchar();
+ 
+    // Closing file after
+    // reading it
+    fclose(fm);
+    display(username2);
+}
+
+void logout(void)
+{
+    int i, j;
+    system("cls");
+    printf("please wait, logging out");
+ 
+    for (i = 0; i < 10; i++) {
+        for (j = 0; j < 25000000; j++) {
+            i++;
+            i--;
+        }
+        printf(".");
+    }
+ 
+    //fmt
+    printf("Sign out successfully..\n");
+ 
+    //fmt
+    printf("press any key to continue..");
+ 
+    getchar();
+}
