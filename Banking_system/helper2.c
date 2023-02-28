@@ -2,9 +2,12 @@
 
 /**
  *create_account - creates user account
+ *
+ *Return: success value
  */
-void create_account(void)
+int create_account(void)
 {
+	struct termios term;
     char password[20], ch;
     int i;
     FILE *fp;
@@ -22,64 +25,62 @@ void create_account(void)
 
     printf("********** CREATE ACCOUNT **********\n");
     printf("Enter first name:");
-    gets(u1.fname);
-    fputs(u1.fname, fp);
+    scanf("%s", u1.fname);
+    fprintf(fp, "%s", u1.fname);
     printf("Enter last name:");
-    gets(u1.lname);
-    fputs(u1.lname, fp);
+    scanf("%s", u1.lname);
+    fprintf(fp, "%s", u1.lname);
     printf("Enter a username:");
-    gets(u1.username);
-    fputs(u1.username, fp);
+    scanf("%s", u1.username);
+    fprintf(fp, "%s", u1.username);
     printf("Enter date of birth:");
     scanf("%d", &u1.date);
-    fputw(u1.date, fp);
+    fprintf(fp, "%d", u1.date);
     printf("Enter month of birth:");
     scanf("%d", &u1.month);
-    fputw(u1.month, fp);
+    fprintf(fp, "%d", u1.month);
     printf("Enter year of birth:");
     scanf("%d", &u1.year);
-    fputw(u1.year, fp);
+    fprintf(fp, "%d", u1.year);
     printf("Enter mobile number:");
     scanf("%d", &u1.mobile_no);
-    fputw(u1.mobile_no, fp);
+    fprintf(fp, "%d", u1.mobile_no);
     printf("Enter account type");
-    gets(u1.account_type);
-    fputs(u1.account_type, fp);
+    scanf("%s", u1.account_type);
+    fprintf(fp, "%s", u1.account_type);
     printf("Enter your town name");
-    gets(u1.address);
-    fputs(u1.address, fp);
+    scanf("%s", u1.address);
+    fprintf(fp, "%s", u1.address);
     printf("Enter your id number:");
     scanf("%d", &u1.idnum);
-    fputw(u1.idnum, fp);
+    fprintf(fp, "%d", u1.idnum);
     printf("Enter your password (8 characters minimum)");
 
-    for (i = 0; i <= 20; i++)
-    {
-        ch = getchar();
-        if (ch != 10) //10 is ascii for ENTER key
-        {
-            password[i] = ch;
-            u1.password[i] = password[i];
-            ch = '*'; //to hide password as ***
-            printf("%c", ch);
-        }
-        else
-        {
-            if (strlen(password) < 8)
-            {
-                printf("Password is too short!");
-                continue;
-            }
+    tcgetattr(STDIN_FILENO, &term);
+    term_orig = term;
+    term.c_lflag &= ~(ECHO | ECHOE | ECHOK | ECHONL | ICANON);
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
 
-            break;
-        }
+    while (i < sizeof(password) - 1)
+    {
+	    ch = getchar;
+
+	    if (ch == '\r' || ch == '\n')
+		    break;
+
+	    password[i++] = ch;
+	    putchar('*'); /* print * to screen to hide password */
+	    fflush(stdout);
     }
-    fputs(u1.password, fp);
+
+    password[i] = '\0';
+    tcsetattr(STDIN_FILENO, TCSANOW, &term_orig);
+    fprintf(fp, "%s", u1.password);
 
     fclose(fp);
 
-    account_success();
-
+   // account_success();
+    return (0);
 }
 
 /**
@@ -127,7 +128,7 @@ void deposit(user *u)
  * display - display user info
  * @username: user's username string
  */
-void display(char username[])
+void display(char *username)
 {
     system("cls");
     FILE* fp;
@@ -199,7 +200,7 @@ void display(char username[])
 
     switch (choice) {
     case 1:
-        checkbalance(username);
+        check_balance(username);
         break;
 
     case 2:
@@ -314,9 +315,9 @@ void transfer_money(void)
 
 /**
  * check_balance - user to check balance
- * @username2: username string 
+ * @username2: username string
  */
-void check_balance(char username2[])
+void check_balance(char *username)
 {
     system("cls");
     FILE* fm;

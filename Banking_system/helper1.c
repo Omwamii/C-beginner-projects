@@ -1,8 +1,6 @@
 #include "main.h"
 
 /**
- *
-/**
  * account_success - display sucess for account creation
  */
 void account_success(void)
@@ -100,7 +98,7 @@ void login_success(void)
     int i;
     system("cls");
     printf("Fetching account details.....\n");
-    for (i = 0; i < 200000000; i++); //waits 
+    for (i = 0; i < 200000000; i++); //waits
 
     printf("\n\nLOGIN SUCCESSFUL....");
     printf("\nPress enter to continue");
