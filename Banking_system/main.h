@@ -18,18 +18,18 @@ typedef struct pass {
     char address[20];
     char account_type[20];
     char password[20];
-    long money;
+    unsigned int money;
 } user;
 
 // Structure to keep track of money transfer
-typedef struct money {
+/*typedef struct money {
     char to[50];
     char from[50];
     long int money1;
-} money;
+} money; */
 
 int create_account(void);
-void deposit(user *u);
+int deposit(int user_id, unsigned int amount);
 void display(char *username);
 void transfer_money(void);
 void check_balance(char *username);
@@ -38,4 +38,5 @@ void logout(void);
 void login_success(void);
 void login(void);
 int menu(void);
+int withdraw(int user_id, unsigned int amount);
 #endif

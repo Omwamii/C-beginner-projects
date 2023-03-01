@@ -140,3 +140,53 @@ void logout(void)
     getchar();
 }
 
+/**
+ *deposit - user makes deposit to account
+ *@u: user struct
+ */
+int withdraw(int user_id, unsigned int amount)
+{
+    FILE *fp;
+    user u;
+    int cash_out = 0;
+    unsigned int amnt = amount;
+    size_t offset; /* file offset to set to write new amount correctly*/
+
+    system("cls");
+
+    if (amnt <= 0)
+    {
+	    printf("Error: amount to withdraw must be a positive number\n");
+	    return (-1);
+    }
+
+    fp = fopen("accounts.txt", "rb+");
+    if (fp == NULL) {
+        printf("Error opening file!\n");
+        return (-1);
+    }
+
+    while (fread(&u, sizeof(user), 1, fp))
+    {
+	    if (u.id == user_id)
+	    {
+		    u.money -= amnt;
+		    offset = -(sizeof(u.money));
+		    fseek(fp, offset, SEEK_CUR); /* set file cursor to beginning to write amount properly */
+		    fwrite(&u.money, sizeof(u.money), 1, fp);
+		    cash_out = 1;
+		    break;
+	    }
+    }
+
+    if (fclose(fp) == -1)
+    {
+	    printf("Error closing file\n");
+	    return (-1);
+    }
+
+    if (cash_out)
+	    return (0);
+
+    return (-1);
+}
