@@ -13,7 +13,7 @@ int create_account(void)
     FILE *fp;
     user u1;
 
-    fp = fopen("accounts.txt", "a+");
+    fp = fopen("accounts.txt", "r+");
 
     if (fp == NULL)
     {
@@ -87,40 +87,62 @@ int create_account(void)
  *deposit - user makes deposit to account
  *@u: user struct
  */
-void deposit(user *u)
+void deposit(int user_id)
 {
     FILE *fp;
-    long amnt;
-    char current_amnt[32];
-    int cash_in = 0;
-    long offset; /* file offset to set to write new amount correclty*/
+    user u;
+    int cash_in = 0, amnt;
+    long offset; /* file offset to set to write new amount correctly*/
 
     system("cls");
 
-    printf("Enter amount to deposit");
-    scanf("%lu", &amnt);
+    while (1)
+    {
+	    printf("Enter amount to deposit: ");
+	    if (scanf("%ld", &amnt) != 1)
+	    {
+		    printf("Error: Invalid input.\n");
+		    while (getchar() != '\n'); /* clear input buffer for non-numeric */
+		    continue;
+	    }
 
-    fp = fopen("file.txt", "r+");
+	    if (amnt <= 0)
+	    {
+		    printf("Error: amount to deposit must be a positive number\n");
+		    continue;
+	    }
+
+	    break;
+    }
+    fp = fopen("file.txt", "rb+");
     if (fp == NULL) {
         printf("Error opening file!\n");
-        exit(1);
+        return;
     }
 
     while (fread(&u, sizeof(user), 1, fp))
     {
-            u->money += amnt;
-            offset = -(long)(sizeof(u->money));
-            fseek(fp, offset, SEEK_CUR);
-            fwrite(&u->money, sizeof(u->money), 1, fp);
-            cash_in = 1;
-            break;
+	    if (u.id == user_id)
+	    {
+		    u.money += amnt;
+		    offset = -(long)(sizeof(u.money));
+		    fseek(fp, offset, SEEK_CUR); /* set file cursor to beginning to write amount properly */
+		    fwrite(&u.money, sizeof(u.money), 1, fp);
+		    cash_in = 1;
+		    break;
+	    }
     }
-    fclose(fp);
+
+    if (fclose(fp) == -1)
+    {
+	    printf("Error closing file\n");
+	    return;
+    }
 
     if (cash_in) {
-        printf("Deposit Successful! New balance: %ld\n", u->money);
+        printf("Deposit Successful! New balance: %ld\n", u.money);
     } else {
-        printf("!!!! Error: Unable to deposit funds\n !!!!");
+        printf("!!!! Error: Unable to deposit funds for user %d!!!!\n", user_id);
     }
 }
 
@@ -132,97 +154,40 @@ void display(char *username)
 {
     system("cls");
     FILE* fp;
-    int choice, i;
+    int choice, i, found = 0;
     fp = fopen("accounts.txt", "r");
     user u1;
 
     if (fp == NULL) {
-        printf("error in opening file");
+        printf("Error: cannot open file");
+	return;
     }
 
-    while (fgets(u1.username, 20, fp)) {
+    while (fread(&u1, sizeof(user), 1, fp)) {
         if (strcmp(username, u1.username) == 0) {
-            //format screen
+		found = 1;
             printf("WELCOME, %s %s", u1.fname, u1.lname);
-            //format screen
             printf("..........................");
-            //fmt screen
             printf("==== YOUR ACCOUNT INFO ====");
-            //fmt screen
             printf("***************************");
-            //fmt screen
             printf("NAME: %s %s", u1.fname, u1.lname);
-
-            //fmt screen
             printf("ID NUMBER: %d", u1.idnum);
-
-            //fmt screen
             printf("MOBILE NUMBER: %d", u1.mobile_no);
-
-            //fmt screen
             printf("DATE OF BIRTH: %d-%d-%d", u1.date, u1.month, u1.year);
-
-            //fmt screen
             printf("ADDRESS: %s", u1.address);
-
-            //fmt screen
             printf("ACCOUNT TYPE: %s", u1.account_type);
         }
     }
 
     fclose(fp);
 
-    //fmt screen
-
-    // Menu to perform different
-    // actions by user
-    printf(" HOME ");
-    //fmt
-
-    printf("******");
-    //fmt
-
-    printf(" 1....CHECK BALANCE");
-    //fmt
-
-    printf(" 2....DEPOSIT MONEY");
-
-    printf(" 3....TRANSFER MONEY");
-    //fmt
-
-    printf(" 4....LOG OUT\n\n");
-    //fmt
-
-    printf(" 5....EXIT\n\n");
-
-    printf(" ENTER YOUR CHOICES... ");
-    scanf("%d", &choice);
-
-    switch (choice) {
-    case 1:
-        check_balance(username);
-        break;
-
-    case 2:
-        deposit(&u1);
-
-    case 3:
-        transfer_money();
-        break;
-
-    case 4:
-        logout();
-        login(); //prompt for login after logout
-        break;
-
-    case 5:
-        system("cls");
-        printf("\t\t\t.......");
-        printf("\t\t\tGoodbye");
-        printf("\t\t\t.......");
-        exit(0);
-        break;
+    if(!found)
+    {
+	    printf("User not found\n");
+	    return;
     }
+
+    menu();
 }
 
 /**
@@ -230,87 +195,45 @@ void display(char *username)
  */
 void transfer_money(void)
 {
-     int i, j;
-    FILE *fp;
-    user u1;
-    char user_from[20];
-    char user_to[20];
+    int amnt;
+    FILE *fp, fm;
+    user u1, u2;
+    char user_from, user_to;
     system("cls");
 
-    // Opening file in read mode to
-    // read user's username
-    fp = fopen("accounts.txt", "rb");
-
-    //fmt
-    printf("---- TRANSFER MONEY ----");
-    //fmt
-    printf("========================");
-
-    //fmt
-    printf("FROM (your username).. ");
-    scanf("%s", &user_from);
-
-    //fmt
-    printf(" TO (username of person)..");
-    scanf("%s", &user_to);
-
-    // Checking for username if it
-    // is present in file or not
-    while (fread(&u1, sizeof(u1),
-                 1, fp))
-
+    user_from = malloc(USERNAME_SIZE + 1);
+    user_to = malloc(USERNAME_SIZE + 1);
+    if (user_from == NULL || user_to == NULL)
     {
-        if (strcmp(user_from,
-                   u1.username)
-            == 0) {
-            strcpy(m1.usernameto,
-                   u1.username);
-            strcpy(m1.userpersonfrom,
-                   usernamet);
-        }
+	    fprintf(stderr, "Error allocating memory\n");
+	    return;
     }
-    //fmt
-    // Taking amount input
+    printf("---- TRANSFER MONEY ----");
+    printf("========================");
+    printf("FROM (your username).... ");
+    scanf("%s", user_from);
+    printf(" TO (username of person)...");
+    scanf("%s", user_to);
     printf("ENTER THE AMOUNT TO BE TRANSFERRED..");
-    scanf("%d", &m1.money1);
-
-    // Writing to the file
-    fwrite(&m1, sizeof(m1),
-           1, fm);
-
-    //fmt
+    scanf("%ld", &amnt);
+    deposit(u2.id, amnt);
+    withdraw(u1.id, amnt);
     printf(
         "--------------------------------------------------"
         "--------------------------------------------");
-
-    //fmt
     printf(
         "--------------------------------------------------"
         "--------------------------------------------");
+    printf("\n\nTransferring amount, Please wait..");
+
+    sleep(5);
 
     //fmt
-    printf("transferring amount, Please wait..");
-
-    //fmt
-    for (i = 0; i < 70; i++) {
-        for (j = 0; j < 1200000; j++) {
-            j++;
-            j--;
-        }
-        printf("*");
-    }
-
-    //fmt
-    printf("AMOUNT SUCCESSFULLY TRANSFERRED....");
+    printf("\n\nTRANSACTION SUCCESSFUL....");
+    printf("Press any key to go back to menu\n");
     getchar();
-
-    // Close the files
-    fclose(fp);
-    fclose(fm);
-
-    // Function to return
-    // to the home screen
-    display(user_to); //?
+    system("cls");
+    menu();
 }
 
 /**
@@ -375,3 +298,57 @@ void check_balance(char *username)
     display(username2);
 }
 
+void menu(void)
+{
+	printf(" HOME ");
+	printf("******");
+	printf(" 1....CHECK BALANCE");
+	printf(" 2....DEPOSIT MONEY");
+	printf(" 3....TRANSFER MONEY");
+	printf(" 4....LOG OUT\n\n");
+	printf(" 5....EXIT\n\n");
+	printf(" ENTER YOUR CHOICE... ");
+	while (1)
+	{
+		if(scanf("%d", &choice) != 1)
+		{
+			printf("Invalid choice.\n");
+			continue;
+		}
+		if (choice < 1 || choice > 5)
+		{
+			printf("Invalid choice.\n");
+			continue;
+		}
+
+		break;
+	}
+
+	switch (choice)
+	{
+		case 1:
+			check_balance(username);
+			break;
+
+		case 2:
+			deposit(u1.id);
+			break;
+
+		case 3:
+			transfer_money();
+			break;
+
+		case 4:
+			logout();
+			login(); //prompt for login after logout
+			break;
+
+		case 5:
+			system("cls");
+			printf("\t\t\t.......");
+			printf("\t\t\tGoodbye ");
+			printf("\t\t\t.......");
+			exit(0);
+			break;
+	}
+}

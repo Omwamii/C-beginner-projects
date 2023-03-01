@@ -8,6 +8,7 @@
 #include <termios.h> //use conio.h for windows
 #include <unistd.h>
 
+#define USERNAME_SIZE 30
 typedef struct pass {
     char username[20];
     int date, month, year;
@@ -35,5 +36,6 @@ void check_balance(char *username);
 void account_success(void);
 void logout(void);
 void login_success(void);
-void login(void); 
+void login(void);
+void menu(void);
 #endif
