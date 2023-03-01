@@ -10,7 +10,7 @@ void account_success(void)
     system("cls");
     printf("\n\nPROCESSING DATA ...");
 
-    for (i = 0; i < 200000000; i++);
+    sleep(5);
 
     printf("\n\nAccount created successfully!");
     printf("\n Press enter to login");
@@ -26,17 +26,13 @@ void login(void)
      system("cls");
 
     char username[50];
-    char password[50];
-
-    int i, j, k;
+    char *password;
+    static int trials;
     char ch;
     FILE *fp;
     user u1;
 
-    // Opening file of
-    // user data
-    fp = fopen("accounts.txt",
-               "r");
+    fp = fopen("accounts.txt","r");
 
     if (fp == NULL) {
         printf("ERROR IN OPENING FILE");
@@ -49,45 +45,64 @@ void login(void)
 
     printf("==== LOG IN ====");
 
-    // Take input
 
     printf("USERNAME..");
-    scanf("%s", &username);
+    scanf("%s", username);
 
+password:  /* incase wrong password is entered, prompt again */
     printf("PASSWORD..");
 
- password:
-    // Input the password
-    for (i = 0; i < 50; i++) {
-        ch = getchar();
-        if (ch != 10) {
-            password[i] = ch;
-            ch = '*';
-            printf("%c", ch);
-        }
+    password = malloc(51);
 
-        else
-            break;
+    if (password  == NULL)
+    {
+	    fprintf(stderr, "Unable to allocate memory to password file");
+	    return;
     }
+    /* Enter  password */
+     while (i < sizeof(password) - 1)
+    {
+            ch = getchar;
 
-    // Checking if username
-    // exists in the file or not
-    while (fgets(u1.username,20,fp)) {
-        if (strcmp(username,u1.username) == 0)
-        {
-            if (strcmp(password, u1.password) == 0)
-            {
-                login_success();
-                display(username);
-            }
+            if (ch == '\r' || ch == '\n')
+                    break;
 
-            printf("Incorrect password!");
-            goto password; //prompt user again to enter password
+            password[i++] = ch;
+            putchar('*'); /* print * to screen to hide password */
+            fflush(stdout);
+    }
+    password[i] = '\0';
+
+    /* Check if user exists */
+    while (fread(&u1, sizeof(user), fp))
+    {
+	    if (strcmp(username,u1.username) == 0)
+	    {
+		    trials++;
+		    if (strcmp(password, u1.password) == 0)
+		    {
+			    free(password);
+			    login_success();
+			    sleep(2);
+			    display(username);
+			    break;
+		    }
+
+		    free(password);
+		    printf("Incorrect password!");
+		    if (trials < 4)
+			    goto password; //prompt user again to enter password
+
         }
     }
 
     // Closing the file
-    fclose(fp);
+    if (fclose(fp) != 0)
+    {
+	    fprintf(stderr, "Unable to close file: accounts\n");
+	    return;
+    }
+    return (0); //?
 }
 
 /**
@@ -98,10 +113,9 @@ void login_success(void)
     int i;
     system("cls");
     printf("Fetching account details.....\n");
-    for (i = 0; i < 200000000; i++); //waits
-
+    sleep(3);
     printf("\n\nLOGIN SUCCESSFUL....");
-    printf("\nPress enter to continue");
+    printf("\nPress any key to continue");
 
     getchar();
 }
@@ -113,22 +127,16 @@ void logout(void)
 {
     int i, j;
     system("cls");
-    printf("please wait, logging out");
+    printf("\n\t<<<Updating system data>>>\t\n");
+    printf("\n\tlogging out.....\t\n");
 
     for (i = 0; i < 10; i++) {
-        for (j = 0; j < 25000000; j++) {
-            i++;
-            i--;
-        }
+        sleep(2);
         printf(".");
     }
 
-    //fmt
-    printf("Sign out successfully..\n");
-
-    //fmt
-    printf("press any key to continue..");
-
+    printf("\n*** You are logged out ***\n");
+    printf("\npress any key to continue..\n");
     getchar();
 }
 

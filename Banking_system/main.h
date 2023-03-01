@@ -37,5 +37,5 @@ void account_success(void);
 void logout(void);
 void login_success(void);
 void login(void);
-void menu(void);
+int menu(void);
 #endif

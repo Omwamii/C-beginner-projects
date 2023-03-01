@@ -228,7 +228,6 @@ void transfer_money(void)
 
     sleep(5);
 
-    //fmt
     printf("\n\nTRANSACTION SUCCESSFUL....");
     printf("Press any key to go back to menu\n");
     getchar();
@@ -251,62 +250,44 @@ void check_balance(char *username)
     // Opening amount file record
     fm = fopen("mon.txt", "rb");
 
-
-    //fmt
     printf("==== BALANCE DASHBOARD ====");
     //fmt
     printf("***************************");
-    //fmt
     printf("S no.");
-    //fmt
     printf("TRANSACTION ID");
-    //fmt
     printf("AMOUNT");
 
-    // Reading username to
-    // fetch the correct record
-    while (fread(&m1, sizeof(m1),
-                 1, fm)) {
-        if (strcmp(username2,
-                   m1.to)
-            == 0) {
-            //fmt
+    /* Read username to fetch correct record */
+    while (fread(&m1, sizeof(m1), 1, fm)) {
+        if (strcmp(username2, m1.to) == 0) {
             printf("%d", i);
             i++;
-            //fmt
             printf("%s", m1.from);
-
-            //fmt
             printf("%d", m1.money1);
-            // Adding and
-            // finding total money
-            summoney = summoney + m1.money1;
+            summoney = summoney + m1.money1; /* total money */
         }
     }
 
-    //fmt
-    printf("TOTAL AMOUNT");
-
-    //fmt
-    printf("%d", summoney);
-
+    printf("TOTAL AMOUNT: ");
+    printf("%d\n", summoney);
     getchar();
-
-    // Closing file after
-    // reading it
     fclose(fm);
     display(username2);
 }
 
-void menu(void)
+int menu(void)
 {
-	printf(" HOME ");
-	printf("******");
-	printf(" 1....CHECK BALANCE");
-	printf(" 2....DEPOSIT MONEY");
-	printf(" 3....TRANSFER MONEY");
-	printf(" 4....LOG OUT\n\n");
-	printf(" 5....EXIT\n\n");
+	int choice;
+
+	system("cls");
+	printf(" HOME \n");
+	printf("******\n");
+	printf(" 1....CHECK BALANCE\n");
+	printf(" 2....DEPOSIT MONEY\n");
+	printf(" 3....TRANSFER MONEY\n");
+	printf(" 4....WITHDRAW MONEY\n");
+	printf(" 5....LOG OUT\n");
+	printf(" 6....QUIT\n\n");
 	printf(" ENTER YOUR CHOICE... ");
 	while (1)
 	{
@@ -315,7 +296,7 @@ void menu(void)
 			printf("Invalid choice.\n");
 			continue;
 		}
-		if (choice < 1 || choice > 5)
+		if (choice < 1 || choice > 6)
 		{
 			printf("Invalid choice.\n");
 			continue;
@@ -339,11 +320,15 @@ void menu(void)
 			break;
 
 		case 4:
+			withdraw();
+			break;
+
+		case 5:
 			logout();
 			login(); //prompt for login after logout
 			break;
 
-		case 5:
+		case 6:
 			system("cls");
 			printf("\t\t\t.......");
 			printf("\t\t\tGoodbye ");
@@ -351,4 +336,5 @@ void menu(void)
 			exit(0);
 			break;
 	}
+	return (0);
 }
