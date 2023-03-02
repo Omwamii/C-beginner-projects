@@ -25,9 +25,7 @@ int find_user(char *username)
 
 	if (!found)
 		return (-1);
-
 	return (0);
-
 }
 
 /**
@@ -72,7 +70,6 @@ int set_uid(char *username)
 
 	if(set)
 		return (0);
-
 	return (-1);
 }
 
@@ -102,6 +99,5 @@ int get_uid(char *username)
 
 	if (got)
 		return (got);
-
 	return (-1);
 }
