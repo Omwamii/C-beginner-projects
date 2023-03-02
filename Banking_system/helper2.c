@@ -78,7 +78,7 @@ int create_account(void)
     	fprintf(fp, "%s", u1.password);
 
     	fclose(fp);
-
+	set_uid(u1.username); /* do err checking */
 	account_success();
     	return (0);
 }
@@ -238,6 +238,8 @@ void transfer_money(char *username)
 	    putchar('.');
     }
 
+    u1.id = get_uid(user_from); /*see if works */
+    u2.id= get_uid(user_to);
     depo = deposit(u2.id, amnt); /* deposit to user_to */
     withd = withdraw(u1.id, amnt); /* withdraw from user_from */
     free(user_from), free(user_to);
@@ -263,15 +265,13 @@ void transfer_money(char *username)
 void check_balance(char *username)
 {
     FILE* fm;
-    struct money m1;
+    user u1;
     char ch;
-    int i = 1, summoney = 0;
+    int balance;
 
-    // Opening amount file record
-    fm = fopen("mon.txt", "rb");
+    fp = fopen("accounts.txt", "r");
 
     system("cls");
-
     printf("==== BALANCE DASHBOARD ====\n");
     printf("***************************\n");
     printf("S no.\n");
@@ -279,21 +279,21 @@ void check_balance(char *username)
     printf("AMOUNT\n");
 
     /* Read username to fetch correct record */
-    while (fread(&m1, sizeof(m1), 1, fm)) {
-        if (strcmp(username2, m1.to) == 0) {
-            printf("%d", i);
-            i++;
-            printf("%s", m1.from);
-            printf("%d", m1.money1);
-            summoney = summoney + m1.money1; /* total money */
-        }
+    while (fread(&u1, sizeof(user), 1, fp))
+    {
+	    if (strcmp(username, u1.username) == 0)
+	    {
+		    balance = u1.money;
+		    break;
+	    }
+	    printf("Account information unavailable\n");
     }
 
     printf("TOTAL AMOUNT: ");
-    printf("%d\n", summoney);
+    printf("%d\n", balance);
     getchar();
-    fclose(fm);
-    display(username2);
+    fclose(fp);
+   /* display(username); */
 }
 
 int menu(void)

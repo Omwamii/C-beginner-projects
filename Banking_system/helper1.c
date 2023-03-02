@@ -129,8 +129,6 @@ void logout(void)
 
     printf("\n*** You are logged out ***\n");
     sleep(2);
-    /* printf("\npress any key to continue..\n");
-    getchar(); */
 }
 
 /**
