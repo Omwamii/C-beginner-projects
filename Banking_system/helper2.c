@@ -79,15 +79,18 @@ int create_account(void)
 
     	fclose(fp);
 
-   // account_success();
+	account_success();
     	return (0);
 }
 
 /**
  *deposit - user makes deposit to account
- *@u: user struct
+ *@user_id: unique user id
+ *@amount: amount to deposit
+ *
+ *Return: success value
  */
-int  deposit(int user_id, int amount)
+int deposit(int user_id, int amount)
 {
     FILE *fp;
     user u;
@@ -137,51 +140,50 @@ int  deposit(int user_id, int amount)
 /**
  * display - display user info
  * @username: user's username string
+ *
+ *Return: 0 if user found -1 if error
  */
-void display(char *username)
+int display(char *username)
 {
+    int found = 0;
+
+    if (fp == NULL)
+    {
+	    printf("Error: cannot open file");
+	    return (-1);
+    }
+
     system("cls");
-    FILE* fp;
-    int choice, i, found = 0;
-    fp = fopen("accounts.txt", "r");
-    user u1;
 
-    if (fp == NULL) {
-        printf("Error: cannot open file");
-	return;
+    if(find_user(username) == 0)
+    {
+	    found = 1;
+	    printf("WELCOME, %s %s\n", u1.fname, u1.lname);
+	    printf("..........................\n");
+	    printf("==== YOUR ACCOUNT INFO ====\n");
+            printf("***************************\n");
+            printf("NAME: %s %s\n", u1.fname, u1.lname);
+            printf("ID NUMBER: %d\n", u1.idnum);
+            printf("MOBILE NUMBER: %d\n", u1.mobile_no);
+            printf("DATE OF BIRTH: %d-%d-%d\n", u1.date, u1.month, u1.year);
+            printf("ADDRESS: %s\n", u1.address);
+            printf("ACCOUNT TYPE: %s\n", u1.account_type);
     }
-
-    while (fread(&u1, sizeof(user), 1, fp)) {
-        if (strcmp(username, u1.username) == 0) {
-		found = 1;
-            printf("WELCOME, %s %s", u1.fname, u1.lname);
-            printf("..........................");
-            printf("==== YOUR ACCOUNT INFO ====");
-            printf("***************************");
-            printf("NAME: %s %s", u1.fname, u1.lname);
-            printf("ID NUMBER: %d", u1.idnum);
-            printf("MOBILE NUMBER: %d", u1.mobile_no);
-            printf("DATE OF BIRTH: %d-%d-%d", u1.date, u1.month, u1.year);
-            printf("ADDRESS: %s", u1.address);
-            printf("ACCOUNT TYPE: %s", u1.account_type);
-        }
-    }
-
-    fclose(fp);
 
     if(!found)
     {
 	    printf("User not found\n");
-	    return;
+	    return (-1);
     }
 
-    menu();
+    return (0);
+    //menu();
 }
 
 /**
  * transfer_money - user to transfer money
  */
-void transfer_money(void)
+void transfer_money(char *username)
 {
 	int withd, depo;
 	unsigned int amnt;
@@ -193,18 +195,17 @@ void transfer_money(void)
     	if (user_from == NULL || user_to == NULL)
     	{
 	   	 fprintf(stderr, "Error allocating memory\n");
-	    	return;
-   	 }
+		 return (-1);
+	}
 
     	system("cls");
 
-    	printf("---- TRANSFER MONEY ----");
-    	printf("========================");
-    	printf("FROM (your username).... ");
-    	scanf("%s", user_from);
-    	printf(" TO (username of person)...");
-    	scanf("%s", user_to);
-    	printf("ENTER THE AMOUNT TO BE TRANSFERRED..");
+	user_from = username;
+    	printf("---- TRANSFER MONEY ----\n");
+    	printf("========================\n\n");
+    	printf(" TO (username of person)...\n");
+    	scanf("%s", user_to); /* add check to verify input */
+    	printf("\n\nENTER THE AMOUNT TO BE TRANSFERRED..");
    	 while (1)
     	{
 	 	   if (scanf("%d", &amnt) != 1)
@@ -224,7 +225,7 @@ void transfer_money(void)
 	}
 
     printf(
-        "--------------------------------------------------"
+        "\n--------------------------------------------------"
         "--------------------------------------------");
     printf(
         "--------------------------------------------------"
@@ -244,12 +245,15 @@ void transfer_money(void)
     if ((depo == 0) && (withd == 0))
 	    printf("\n\nTRANSACTION SUCCESSFUL....");
     else
+    {
 	    printf("\n\nTRANSACTION FAILED!\n");
+	    return (-1);
+    }
 
     printf("\nPress any key to go back to menu\n");
     getchar();
-    system("cls");
-    menu();
+    return (0);
+    //system("cls");
 }
 
 /**
@@ -333,7 +337,7 @@ int menu(void)
 			break;
 
 		case 3:
-			transfer_money();
+			transfer_money(u1.username);
 			break;
 
 		case 4:

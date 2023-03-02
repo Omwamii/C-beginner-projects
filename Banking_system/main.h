@@ -7,6 +7,7 @@
 #include <string.h>
 #include <termios.h> //use conio.h for windows
 #include <unistd.h>
+#include <time.h>
 
 #define USERNAME_SIZE 30
 typedef struct pass {
@@ -18,7 +19,8 @@ typedef struct pass {
     char address[20];
     char account_type[20];
     char password[20];
-    unsigned int money;
+    unsigned int money = 0;
+    unsigned int id;/* default user id before set_id */
 } user;
 
 // Structure to keep track of money transfer
@@ -39,4 +41,7 @@ void login_success(void);
 void login(void);
 int menu(void);
 int withdraw(int user_id, unsigned int amount);
+int find_user(char *username);
+int set_uid(char *username);
+int get_uid(char *username);
 #endif
