@@ -62,8 +62,8 @@ int set_uid(char *username)
 			fread(&u1, sizeof(user), 1, fp);
 			u1.id = random_id;
 			offset = -(long)(sizeof(u1.id));
-			// ?fseek(fp, offset, SEEK_CUR);
-			fwrite(u1.id, sizeof(u1.id), 1, fp); /* add error-checking */
+			fseek(fp, offset, SEEK_CUR);
+			fwrite(&u1.id, sizeof(u1.id), 1, fp); /* add error-checking */
 		}
 		else
 		{

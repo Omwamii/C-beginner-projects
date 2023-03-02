@@ -38,7 +38,7 @@ void check_balance(char *username);
 void account_success(void);
 void logout(void);
 void login_success(void);
-void login(void);
+int login(void);
 int menu(void);
 int withdraw(int user_id, unsigned int amount);
 int find_user(char *username);

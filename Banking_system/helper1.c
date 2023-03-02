@@ -9,9 +9,7 @@ void account_success(void)
 
     system("cls");
     printf("\n\nPROCESSING DATA ...");
-
     sleep(5);
-
     printf("\n\nAccount created successfully!");
     printf("\n Press enter to login");
     getchar();
@@ -21,10 +19,8 @@ void account_success(void)
 /**
  * login - prompt for user login
  */
-void login(void)
+int login(void)
 {
-     system("cls");
-
     char username[50];
     char *password;
     static int trials;
@@ -33,45 +29,39 @@ void login(void)
     user u1;
 
     fp = fopen("accounts.txt","r");
-
-    if (fp == NULL) {
-        printf("ERROR IN OPENING FILE");
+    if (fp == NULL)
+    {
+	    printf("ERROR IN OPENING FILE");
+	    return (-1);
     }
 
-    printf(" ACCOUNT LOGIN ");
-
+    printf(" ACCOUNT LOGIN \n");
     printf("***********************************************"
-           "********************************");
-
-    printf("==== LOG IN ====");
-
-
+           "********************************\n");
+    printf("==== LOG IN ====\n");
     printf("USERNAME..");
     scanf("%s", username);
 
 password:  /* incase wrong password is entered, prompt again */
-    printf("PASSWORD..");
-
+    printf("\nPASSWORD..");
     password = malloc(51);
-
     if (password  == NULL)
     {
 	    fprintf(stderr, "Unable to allocate memory to password file");
-	    return;
+	    return (-1);
     }
     /* Enter  password */
      while (i < sizeof(password) - 1)
-    {
-            ch = getchar;
+     {
+	     ch = getchar;
+	     if (ch == '\r' || ch == '\n')
+		     break;
 
-            if (ch == '\r' || ch == '\n')
-                    break;
-
-            password[i++] = ch;
-            putchar('*'); /* print * to screen to hide password */
-            fflush(stdout);
-    }
-    password[i] = '\0';
+	     password[i++] = ch;
+	     putchar('*'); /* print * to screen to hide password */
+	     fflush(stdout);
+     }
+     password[i] = '\0';
 
     /* Check if user exists */
     while (fread(&u1, sizeof(user), fp))
@@ -102,6 +92,7 @@ password:  /* incase wrong password is entered, prompt again */
 	    fprintf(stderr, "Unable to close file: accounts\n");
 	    return;
     }
+    login_success();
     return (0); //?
 }
 
@@ -110,7 +101,6 @@ password:  /* incase wrong password is entered, prompt again */
  */
 void login_success(void)
 {
-    int i;
     system("cls");
     printf("Fetching account details.....\n");
     sleep(3);
@@ -125,19 +115,22 @@ void login_success(void)
  */
 void logout(void)
 {
-    int i, j;
+    int i;
+
     system("cls");
     printf("\n\t<<<Updating system data>>>\t\n");
     printf("\n\tlogging out.....\t\n");
 
-    for (i = 0; i < 10; i++) {
-        sleep(2);
-        printf(".");
+    for (i = 0; i < 10; i++)
+    {
+	    sleep(2);
+	    printf(".");
     }
 
     printf("\n*** You are logged out ***\n");
-    printf("\npress any key to continue..\n");
-    getchar();
+    sleep(2);
+    /* printf("\npress any key to continue..\n");
+    getchar(); */
 }
 
 /**
