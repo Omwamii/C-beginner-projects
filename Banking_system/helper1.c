@@ -121,8 +121,10 @@ void logout(void)
 }
 
 /**
- *deposit - user makes deposit to account
- *@u: user struct
+ *withdraw - user makes withdrawal
+ *@user_id: user id
+ *
+ *Return: success value
  */
 int withdraw(int user_id)
 {
