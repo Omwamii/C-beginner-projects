@@ -358,5 +358,5 @@ int menu(void)
 			exit(0);
 			break;
 	}
-	return (0);
+	return (1); /* loop */
 }
