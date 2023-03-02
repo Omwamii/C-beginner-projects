@@ -7,7 +7,7 @@
  */
 int create_account(void)
 {
-	struct termios term;
+	/*struct termios term;*/
 	char password[20], ch;
     	int i;
     	FILE *fp;
@@ -56,10 +56,10 @@ int create_account(void)
     	fprintf(fp, "%d", u1.idnum);
     	printf("Enter your password (8 characters minimum)");
 
-    	tcgetattr(STDIN_FILENO, &term);
+    	/*tcgetattr(STDIN_FILENO, &term);
     	term_orig = term;
     	term.c_lflag &= ~(ECHO | ECHOE | ECHOK | ECHONL | ICANON);
-    	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+    	tcsetattr(STDIN_FILENO, TCSANOW, &term); */
 
     	while (i < sizeof(password) - 1)
     	{
@@ -72,7 +72,7 @@ int create_account(void)
     	}
 
     	password[i] = '\0';
-    	tcsetattr(STDIN_FILENO, TCSANOW, &term_orig);
+    	/*tcsetattr(STDIN_FILENO, TCSANOW, &term_orig);*/
     	fprintf(fp, "%s", u1.password);
     	fclose(fp);
 	set_uid(u1.username); /* do err checking */
@@ -89,7 +89,7 @@ int create_account(void)
  */
 int deposit(int user_id)
 {
-	unsigned int amnt;
+	int amnt;
 	system("cls");
 
 	printf("Enter amount to deposit:: ");
@@ -126,17 +126,20 @@ int deposit(int user_id)
 int display(char *username)
 {
     int found = 0;
+    FILE *fp;
+    user u1;
 
+    fp = fopen("accounts.txt", "r");
     if (fp == NULL)
     {
-	    printf("Error: cannot open file");
+	    printf("Cannot open file: accounts\n");
 	    return (-1);
     }
 
     system("cls");
-
     if(find_user(username) == 0)
     {
+	    while(fread(&u1, sizeof(user), 1, fp));
 	    found = 1;
 	    printf("WELCOME, %s %s\n", u1.fname, u1.lname);
 	    printf("..........................\n");
@@ -149,7 +152,7 @@ int display(char *username)
             printf("ADDRESS: %s\n", u1.address);
             printf("ACCOUNT TYPE: %s\n", u1.account_type);
     }
-
+    fclose(fp);
     if(!found)
     {
 	    printf("User not found\n");
@@ -166,14 +169,14 @@ int display(char *username)
  *
  *Return: sucess value
  */
-void transfer_money(char *username)
+int transfer_money(char *username)
 {
 	int withd, depo, id1, id2;
-	unsigned int amnt;
+	int amnt, i;
 	char *user_from, *user_to;
 
-    	user_from = malloc(USERNAME_SIZE + 1);
-    	user_to = malloc(USERNAME_SIZE + 1);
+    	user_from = malloc(NAME_SIZE + 1);
+    	user_to = malloc(NAME_SIZE + 1);
     	if (user_from == NULL || user_to == NULL)
     	{
 	   	 fprintf(stderr, "Error allocating memory\n");
@@ -181,7 +184,7 @@ void transfer_money(char *username)
 	}
 
     	system("cls");
-	user_from = username;
+	strcpy(user_from, username);
     	printf("---- TRANSFER MONEY ----\n");
     	printf("========================\n\n");
     	printf(" TO (username of person)...\n");
@@ -229,7 +232,6 @@ void transfer_money(char *username)
 	 printf("\nPress any key to go back to menu\n");
 	 getchar();
 	 return (0);
-    //system("cls");
 }
 
 /**
@@ -270,7 +272,7 @@ void check_balance(int u_id)
    /* display(username); */
 }
 
-int menu(user &u1)
+int menu(user *u)
 {
 	int choice;
 
@@ -320,7 +322,7 @@ int menu(user &u1)
 
 		case 5:
 			logout();
-			login(); /* prompt for login after logout */
+			//login(); /* prompt for login after logout */
 			break;
 
 		case 6:
@@ -329,6 +331,7 @@ int menu(user &u1)
 			printf("\t\t\tGoodbye ");
 			printf("\t\t\t.......");
 			printf("\a"); /* beep */
+			sleep(1);
 			exit(0);
 			break;
 	}

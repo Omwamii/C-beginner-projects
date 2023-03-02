@@ -46,7 +46,7 @@ int set_uid(char *username)
 	if (fp == NULL)
 		return (-1);
 
-	srand(time());
+	srand(time(0));
 	random_id = rand();
 	if (random_id)
 		set = 1;
@@ -89,10 +89,10 @@ int get_uid(char *username)
 	if (fp == NULL)
 		return (-1);
 
-	while(fread(u1, sizeof(user), 1, fp))
+	while(fread(&u1, sizeof(user), 1, fp))
 	{
 		if(u1.id > 0)
-			got = u1.id
+			got = u1.id;
 	}
 	fclose(fp);
 
@@ -108,13 +108,12 @@ int get_uid(char *username)
   *
   *Return: success value
   */
-int credit_account(int user_id, unsigned int amount)
+int credit_account(int u_id, int amount)
 {
     FILE *fp;
     user u;
-    int cash_in = 0;
+    int cash_in = 0, amnt = amount;
     size_t offset; /* file offset to set to write new amount correctly*/
-    unsigned int amnt = amount;
 
     system("cls");
     fp = fopen("file.txt", "rb+");
@@ -125,7 +124,7 @@ int credit_account(int user_id, unsigned int amount)
 
     while (fread(&u, sizeof(user), 1, fp))
     {
-	    if (u.id == user_id)
+	    if (u.id == u_id)
 	    {
 		    u.money += amnt;
 		    offset = -(sizeof(u.money));
@@ -155,12 +154,11 @@ int credit_account(int user_id, unsigned int amount)
   *
   *Return: success value
   */
-int debit_account(int u_id, unsigned int amount)
+int debit_account(int u_id, int amount)
 {
 	FILE *fp;
 	user u;
-	int cash_out = 0;
-	unsigned int amnt = amount;
+	int cash_out = 0, amnt = amount;
 	long offset; /* file offset to set to write new amount correctly*/
 
     	system("cls");
@@ -172,7 +170,7 @@ int debit_account(int u_id, unsigned int amount)
 
     	while (fread(&u, sizeof(user), 1, fp))
     	{
-	    	if (u.id == user_id)
+	    	if (u.id == u_id)
 	    	{
 			u.money -= amnt;
 		    	offset = -(long)(sizeof(u.money));

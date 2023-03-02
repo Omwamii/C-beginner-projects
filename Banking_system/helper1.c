@@ -24,6 +24,7 @@ int login(void)
     static int trials;
     FILE *fp;
     user u1;
+    int i = 0;
 
     fp = fopen("accounts.txt","r");
     if (fp == NULL)
@@ -48,7 +49,7 @@ password:  /* incase wrong password is entered, prompt again */
     /* Enter  password */
      while (i < sizeof(password) - 1)
      {
-	     ch = getchar;
+	     ch = getchar();
 	     if (ch == '\r' || ch == '\n')
 		     break;
 
@@ -59,7 +60,7 @@ password:  /* incase wrong password is entered, prompt again */
      password[i] = '\0';
 
     /* Check if user exists */
-    while (fread(&u1, sizeof(user), fp))
+    while (fread(&u1, sizeof(user),1, fp))
     {
 	    if (strcmp(username,u1.username) == 0)
 	    {
@@ -81,10 +82,11 @@ password:  /* incase wrong password is entered, prompt again */
     if (fclose(fp) != 0)
     {
 	    fprintf(stderr, "Unable to close file: accounts\n");
-	    return;
+	    return (-1);
     }
     login_success();
-    return (0); //?
+    while(menu(&u1));
+    return (0);
 }
 
 /**
@@ -128,7 +130,7 @@ void logout(void)
  */
 int withdraw(int user_id)
 {
-	unsigned int amnt;
+	int amnt;
 	system("cls");
 
 	printf("Enter amount to withdraw:: ");
