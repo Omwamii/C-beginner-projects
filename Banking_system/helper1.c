@@ -5,8 +5,6 @@
  */
 void account_success(void)
 {
-    int i;
-
     system("cls");
     printf("\n\nPROCESSING DATA ...");
     sleep(5);
