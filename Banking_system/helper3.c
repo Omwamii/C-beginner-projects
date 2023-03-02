@@ -68,12 +68,17 @@ int set_uid(char *username)
 		else
 		{
 			printf("Error: user not found\n");
-			return (-1);
+			set = 0;
 		}
 
 	}
 
-	return (0);
+	fclose(fp);
+
+	if(set)
+		return (0);
+
+	return (-1);
 }
 
 /**
