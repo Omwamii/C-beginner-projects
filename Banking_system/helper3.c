@@ -87,7 +87,7 @@ int get_uid(char *username)
 {
 	FILE *fp;
 	user u1;
-	int get = 0;
+	int got = 0;
 
 	fp = fopen("accounts.txt", "r");
 
@@ -97,8 +97,13 @@ int get_uid(char *username)
 	while(fread(u1, sizeof(user), 1, fp))
 	{
 		if(u1.id > 0)
-			return (u1.id);
+			got = u1.id
 	}
+
+	fclose(fp);
+
+	if (got)
+		return (got);
 
 	return (-1);
 }
