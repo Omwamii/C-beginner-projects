@@ -63,20 +63,17 @@ int create_account(void)
 
     	while (i < sizeof(password) - 1)
     	{
-		    ch = getchar;
-
-	    	if (ch == '\r' || ch == '\n')
+		    ch = getchar();
+		    if (ch == '\r' || ch == '\n')
 			    break;
-
-	    	password[i++] = ch;
-	    	putchar('*'); /* print * to screen to hide password */
-	    	fflush(stdout);
+		    password[i++] = ch;
+		    putchar('*'); /* print * to screen to hide password */
+		    fflush(stdout);
     	}
 
     	password[i] = '\0';
     	tcsetattr(STDIN_FILENO, TCSANOW, &term_orig);
     	fprintf(fp, "%s", u1.password);
-
     	fclose(fp);
 	set_uid(u1.username); /* do err checking */
 	account_success();
@@ -90,51 +87,34 @@ int create_account(void)
  *
  *Return: success value
  */
-int deposit(int user_id, int amount)
+int deposit(int user_id)
 {
-    FILE *fp;
-    user u;
-    int cash_in = 0;
-    size_t offset; /* file offset to set to write new amount correctly*/
-    unsigned int amnt = amount;
+	unsigned int amnt;
+	system("cls");
 
-    system("cls");
+	printf("Enter amount to deposit:: ");
+	while (1)
+	{
+		if (scanf("%d", &amnt) != 1)
+		{
+			printf("Invalid input\n");
+			continue;
+		}
+		if (amnt <= 0)
+		{
+			printf("Amount must be more than 0\n");
+			continue;
+		}
+		break;
+	}
 
-    if (amnt <= 0)
-    {
-	    printf("Error: amount to deposit must be a positive number\n");
-	    return (-1);
-    }
-
-    fp = fopen("file.txt", "rb+");
-    if (fp == NULL) {
-        printf("Error opening file!\n");
-        return (-1);
-    }
-
-    while (fread(&u, sizeof(user), 1, fp))
-    {
-	    if (u.id == user_id)
-	    {
-		    u.money += amnt;
-		    offset = -(sizeof(u.money));
-		    fseek(fp, offset, SEEK_CUR); /* set file cursor to beginning to write amount properly */
-		    fwrite(&u.money, sizeof(u.money), 1, fp);
-		    cash_in = 1;
-		    break;
-	    }
-    }
-
-    if (fclose(fp) == -1)
-    {
-	    printf("Error closing file\n");
-	    return (-1);
-    }
-
-    if (cash_in)
-	    return (0);
-
-    return (-1);
+	if(credit_account(user_id, amnt) == 0)
+	{
+		printf("Deposit successful\n");
+		return (0);
+	}
+	printf("Deposit unsuccessful\n");
+	return (-1);
 }
 
 /**
@@ -182,12 +162,14 @@ int display(char *username)
 
 /**
  * transfer_money - user to transfer money
+ *@username: username of user
+ *
+ *Return: sucess value
  */
 void transfer_money(char *username)
 {
-	int withd, depo;
+	int withd, depo, id1, id2;
 	unsigned int amnt;
-	user u1, u2;
 	char *user_from, *user_to;
 
     	user_from = malloc(USERNAME_SIZE + 1);
@@ -199,62 +181,54 @@ void transfer_money(char *username)
 	}
 
     	system("cls");
-
 	user_from = username;
     	printf("---- TRANSFER MONEY ----\n");
     	printf("========================\n\n");
     	printf(" TO (username of person)...\n");
     	scanf("%s", user_to); /* add check to verify input */
     	printf("\n\nENTER THE AMOUNT TO BE TRANSFERRED..");
-   	 while (1)
-    	{
-	 	   if (scanf("%d", &amnt) != 1)
-		   {
-			   printf("Error: Invalid input.\n");
-			   while (getchar() != '\n'); /* clear input buffer for non-numeric */
-			   continue;
-		   }
-
-		   if (amnt <= 0)
-		   {
-			   printf("Error: amount to deposit must be a positive number\n");
-			   continue;
-		   }
-
-		   break;
+	while (1)
+	{
+		if (scanf("%d", &amnt) != 1)
+		{
+			printf("Error: Invalid input.\n");
+			while (getchar() != '\n'); /* clear input buffer for non-numeric */
+			continue;
+		}
+		if (amnt <= 0)
+		{
+			printf("Error: amount to deposit must be a positive number\n");
+			continue;
+		}
+		break;
 	}
 
-    printf(
-        "\n--------------------------------------------------"
-        "--------------------------------------------");
-    printf(
-        "--------------------------------------------------"
-        "--------------------------------------------");
-    printf("\n\nTransferring amount, Please wait..\n\n");
+	 printf("\n----------------------------------------------------------------------------------------------");
+	 printf("\n----------------------------------------------------------------------------------------------");
+	 printf("\n\nTransferring amount, Please wait..\n\n");
+	 for (i = 0; i < 6; i++)
+	 {
+		 sleep(2);
+		 putchar('.');
+	 }
 
-    for (i = 0; i < 6; i++)
-    {
-	    sleep(2);
-	    putchar('.');
-    }
+	 id1 = get_uid(user_from); /*see if works */
+	 id2= get_uid(user_to);
+	 depo = credit_account(id2, amnt); /* deposit to user_to */
+	 withd = debit_account(id1, amnt); /* withdraw from user_from */
+	 free(user_from), free(user_to);
 
-    u1.id = get_uid(user_from); /*see if works */
-    u2.id= get_uid(user_to);
-    depo = deposit(u2.id, amnt); /* deposit to user_to */
-    withd = withdraw(u1.id, amnt); /* withdraw from user_from */
-    free(user_from), free(user_to);
+	 if ((depo == 0) && (withd == 0))
+		 printf("\n\nTRANSACTION SUCCESSFUL....");
+	 else
+	 {
+		 printf("\n\nTRANSACTION FAILED!\n");
+		 return (-1);
+	 }
 
-    if ((depo == 0) && (withd == 0))
-	    printf("\n\nTRANSACTION SUCCESSFUL....");
-    else
-    {
-	    printf("\n\nTRANSACTION FAILED!\n");
-	    return (-1);
-    }
-
-    printf("\nPress any key to go back to menu\n");
-    getchar();
-    return (0);
+	 printf("\nPress any key to go back to menu\n");
+	 getchar();
+	 return (0);
     //system("cls");
 }
 
@@ -262,9 +236,9 @@ void transfer_money(char *username)
  * check_balance - user to check balance
  * @username2: username string
  */
-void check_balance(char *username)
+void check_balance(int u_id)
 {
-    FILE* fm;
+    FILE* fp;
     user u1;
     char ch;
     int balance;
@@ -281,7 +255,7 @@ void check_balance(char *username)
     /* Read username to fetch correct record */
     while (fread(&u1, sizeof(user), 1, fp))
     {
-	    if (strcmp(username, u1.username) == 0)
+	    if (u_id == u1.id)
 	    {
 		    balance = u1.money;
 		    break;
@@ -296,7 +270,7 @@ void check_balance(char *username)
    /* display(username); */
 }
 
-int menu(void)
+int menu(user &u1)
 {
 	int choice;
 
@@ -329,19 +303,19 @@ int menu(void)
 	switch (choice)
 	{
 		case 1:
-			check_balance(username);
+			check_balance(u->id);
 			break;
 
 		case 2:
-			deposit(u1.id);
+			deposit(u->id);
 			break;
 
 		case 3:
-			transfer_money(u1.username);
+			transfer_money(u->username);
 			break;
 
 		case 4:
-			withdraw();
+			withdraw(u->id);
 			break;
 
 		case 5:

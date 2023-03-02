@@ -44,4 +44,6 @@ int withdraw(int user_id, unsigned int amount);
 int find_user(char *username);
 int set_uid(char *username);
 int get_uid(char *username);
+int credit_account(int u_id, unsigned int amount);
+int debit_account(int u_id, unsigned int amount);
 #endif

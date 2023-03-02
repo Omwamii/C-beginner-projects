@@ -79,7 +79,6 @@ int set_uid(char *username)
   *
   *Return: user id;
   */
-
 int get_uid(char *username)
 {
 	FILE *fp;
@@ -99,5 +98,98 @@ int get_uid(char *username)
 
 	if (got)
 		return (got);
+	return (-1);
+}
+
+/**
+  *credit_account - money sending transactions
+  *@u_id: user id
+  *@amount: amount to send
+  *
+  *Return: success value
+  */
+int credit_account(int user_id, unsigned int amount)
+{
+    FILE *fp;
+    user u;
+    int cash_in = 0;
+    size_t offset; /* file offset to set to write new amount correctly*/
+    unsigned int amnt = amount;
+
+    system("cls");
+    fp = fopen("file.txt", "rb+");
+    if (fp == NULL) {
+        printf("Error opening file!\n");
+        return (-1);
+    }
+
+    while (fread(&u, sizeof(user), 1, fp))
+    {
+	    if (u.id == user_id)
+	    {
+		    u.money += amnt;
+		    offset = -(sizeof(u.money));
+		    fseek(fp, offset, SEEK_CUR); /* set file cursor to beginning to write amount properly */
+		    fwrite(&u.money, sizeof(u.money), 1, fp);
+		    cash_in = 1;
+		    break;
+	    }
+    }
+
+    if (fclose(fp) == -1)
+    {
+	    printf("Error closing file\n");
+	    return (-1);
+    }
+
+    if (cash_in)
+	    return (0);
+
+    return (-1);
+}
+
+/**
+  *debit_account - deducts money from account
+  *@u_id: user id
+  *@amount: amount to deduct
+  *
+  *Return: success value
+  */
+int debit_account(int u_id, unsigned int amount)
+{
+	FILE *fp;
+	user u;
+	int cash_out = 0;
+	unsigned int amnt = amount;
+	long offset; /* file offset to set to write new amount correctly*/
+
+    	system("cls");
+    	fp = fopen("accounts.txt", "rb+");
+    	if (fp == NULL) {
+        	printf("Error opening file!\n");
+        	return (-1);
+	}
+
+    	while (fread(&u, sizeof(user), 1, fp))
+    	{
+	    	if (u.id == user_id)
+	    	{
+			u.money -= amnt;
+		    	offset = -(long)(sizeof(u.money));
+		    	fseek(fp, offset, SEEK_CUR); /* set file cursor to beginning to write amount properly */
+		    	fwrite(&u.money, sizeof(u.money), 1, fp);
+		    	cash_out = 1;
+		    	break;
+	    	}
+    	}
+
+    	if (fclose(fp) == -1)
+    	{
+	    	printf("Error closing file\n");
+	    	return (-1);
+    	}
+
+    	if (cash_out)
+		return (0);
 	return (-1);
 }

@@ -135,49 +135,32 @@ void logout(void)
  *deposit - user makes deposit to account
  *@u: user struct
  */
-int withdraw(int user_id, unsigned int amount)
+int withdraw(int user_id)
 {
-    FILE *fp;
-    user u;
-    int cash_out = 0;
-    unsigned int amnt = amount;
-    size_t offset; /* file offset to set to write new amount correctly*/
+	unsigned int amnt;
+	system("cls");
 
-    system("cls");
+	printf("Enter amount to withdraw:: ");
+	while (1)
+	{
+		if (scanf("%d", &amnt) != 1)
+		{
+			printf("Invalid input\n");
+			continue;
+		}
+		if (amnt <= 0)
+		{
+			printf("Amount must be more than 0\n");
+			continue;
+		}
+		break;
+	}
 
-    if (amnt <= 0)
-    {
-	    printf("Error: amount to withdraw must be a positive number\n");
-	    return (-1);
-    }
-
-    fp = fopen("accounts.txt", "rb+");
-    if (fp == NULL) {
-        printf("Error opening file!\n");
-        return (-1);
-    }
-
-    while (fread(&u, sizeof(user), 1, fp))
-    {
-	    if (u.id == user_id)
-	    {
-		    u.money -= amnt;
-		    offset = -(sizeof(u.money));
-		    fseek(fp, offset, SEEK_CUR); /* set file cursor to beginning to write amount properly */
-		    fwrite(&u.money, sizeof(u.money), 1, fp);
-		    cash_out = 1;
-		    break;
-	    }
-    }
-
-    if (fclose(fp) == -1)
-    {
-	    printf("Error closing file\n");
-	    return (-1);
-    }
-
-    if (cash_out)
-	    return (0);
-
-    return (-1);
+	if(debit_account(user_id, amnt) == 0)
+	{
+		printf("%d Withdrawn successfuly\n", amnt);
+		return (0);
+	}
+	printf("Withdrawal unsuccessful\n");
+	return (-1);
 }
