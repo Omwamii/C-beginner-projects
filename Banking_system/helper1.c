@@ -22,9 +22,8 @@ void account_success(void)
 int login(void)
 {
     char username[50];
-    char *password;
+    char *password, ch;
     static int trials;
-    char ch;
     FILE *fp;
     user u1;
 
@@ -34,10 +33,8 @@ int login(void)
 	    printf("ERROR IN OPENING FILE");
 	    return (-1);
     }
-
     printf(" ACCOUNT LOGIN \n");
-    printf("***********************************************"
-           "********************************\n");
+    printf("*******************************************************************************\n");
     printf("==== LOG IN ====\n");
     printf("USERNAME..");
     scanf("%s", username);
@@ -77,16 +74,12 @@ password:  /* incase wrong password is entered, prompt again */
 			    display(username);
 			    break;
 		    }
-
 		    free(password);
 		    printf("Incorrect password!");
 		    if (trials < 4)
 			    goto password; //prompt user again to enter password
-
         }
     }
-
-    // Closing the file
     if (fclose(fp) != 0)
     {
 	    fprintf(stderr, "Unable to close file: accounts\n");
@@ -106,7 +99,6 @@ void login_success(void)
     sleep(3);
     printf("\n\nLOGIN SUCCESSFUL....");
     printf("\nPress any key to continue");
-
     getchar();
 }
 
@@ -126,7 +118,6 @@ void logout(void)
 	    sleep(2);
 	    printf(".");
     }
-
     printf("\n*** You are logged out ***\n");
     sleep(2);
 }
