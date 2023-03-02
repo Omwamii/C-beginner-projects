@@ -13,7 +13,6 @@ int find_user(char *username)
 	int found = 0;
 
 	fp = fopen("accounts.txt", "r");
-
 	if (fp == NULL)
 		return (-1);
 
@@ -22,7 +21,6 @@ int find_user(char *username)
 		if (strcmp(username, u1.username) == 0)
 			found = 1;
 	}
-
 	fclose(fp);
 
 	if (!found)
@@ -47,7 +45,6 @@ int set_uid(char *username)
 	long offset;
 
 	fp = fopen("accounts.txt", "r+");
-
 	if (fp == NULL)
 		return (-1);
 
@@ -70,9 +67,7 @@ int set_uid(char *username)
 			printf("Error: user not found\n");
 			set = 0;
 		}
-
 	}
-
 	fclose(fp);
 
 	if(set)
@@ -95,7 +90,6 @@ int get_uid(char *username)
 	int got = 0;
 
 	fp = fopen("accounts.txt", "r");
-
 	if (fp == NULL)
 		return (-1);
 
@@ -104,7 +98,6 @@ int get_uid(char *username)
 		if(u1.id > 0)
 			got = u1.id
 	}
-
 	fclose(fp);
 
 	if (got)
