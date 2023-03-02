@@ -10,6 +10,8 @@
 #include <time.h>
 
 #define USERNAME_SIZE 30
+
+/* user account info struct */
 typedef struct pass {
     char username[20];
     int date, month, year;
@@ -20,16 +22,8 @@ typedef struct pass {
     char account_type[20];
     char password[20];
     unsigned int money = 0;
-    unsigned int id;/* default user id before set_id */
+    unsigned int id = 0;/* default user id before set_id */
 } user;
-
-// Structure to keep track of money transfer
-/*typedef struct money {
-    char to[50];
-    char from[50];
-    long int money1;
-} money; */
-
 int create_account(void);
 int deposit(int user_id, unsigned int amount);
 void display(char *username);
