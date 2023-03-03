@@ -46,7 +46,7 @@ int set_uid(char *username)
 	if (fp == NULL)
 		return (-1);
 
-	srand(time(0));
+	srand(time(NULL));
 	random_id = rand();
 	if (random_id)
 		set = 1;
@@ -57,8 +57,18 @@ int set_uid(char *username)
 			fread(&u1, sizeof(user), 1, fp);
 			u1.id = random_id;
 			offset = -(long)(sizeof(u1.id));
-			fseek(fp, offset, SEEK_CUR);
-			fwrite(&u1.id, sizeof(u1.id), 1, fp); /* add error-checking */
+			if(fseek(fp, offset, SEEK_CUR) != 0)
+			{
+				printf("Error seeking file\n");
+				fclose(fp);
+				return (-1);
+			}
+			if (fwrite(&u1.id, sizeof(u1.id), 1, fp) != 1)
+			{
+				printf("Error writing to file: id\n");
+				fclose(fp);
+				return (-1);
+			}
 		}
 		else
 		{

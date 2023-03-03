@@ -9,9 +9,9 @@ void account_success(void)
     printf("\n\nPROCESSING DATA ...");
     sleep(4);
     printf("\n\nAccount created successfully!");
-    printf("\n Press enter to login\n");
+    /*printf("\n Press enter to login\n");
     getchar();
-    login();
+    //login(); */
 }
 
 /**
@@ -25,6 +25,7 @@ int login(void)
     FILE *fp;
     user u1;
     int i = 0, in = 0;
+    int logged_in = 0;
 
     system("clear");
     fp = fopen("accounts.txt","r");
@@ -39,29 +40,28 @@ int login(void)
     printf("USERNAME: ");
     scanf("%s", username);
 
-password:  /* incase wrong password is entered, prompt again */
-    printf("\nPASSWORD: ");
-
-    password = malloc(51);
-    if (password  == NULL)
+    while (1)
     {
-	    fprintf(stderr, "Unable to allocate memory to password file");
-	    return (-1);
-    }
-    /* Enter  password */
-     while (i < sizeof(password) - 1)
-     {
-	     ch = getchar();
-	     if (ch == '\r' || ch == '\n')
-		     break;
+	    printf("\nPASSWORD: ");
 
-	     password[i++] = ch;
-	     putchar('*'); /* print * to screen to hide password */
-	     fflush(stdout);
-     }
-     password[i] = '\0';
+	    password = malloc(20);
+	    if (password  == NULL)
+	    {
+		    fprintf(stderr, "Unable to allocate memory to password file");
+		    return (-1);
+	    }
+	    /* Enter  password */
+	    while (i < 20)
+	    {
+		    ch = getchar();
+		    if (ch == '\r' || ch == '\n')
+			    break;
+		    password[i++] = ch;
+		    putchar('*'); /* print * to screen to hide password */
+		    fflush(stdout);
+	    }
+	    password[i] = '\0';
 
-    /* Check if user exists */
 	    if (find_user(username) == 0)
 	    {
 		    trials++;
@@ -73,15 +73,26 @@ password:  /* incase wrong password is entered, prompt again */
 			    sleep(1);
 			    system("clear");
 			    display(username);
+			    break;
 		    }
 		    else
 		    {
 			    free(password);
 			    printf("Incorrect password!");
-			    if (trials < 4)
-				    goto password; //prompt user again to enter password
+			    if (trials >= 3)
+			    {
+				    printf("\nToo many attempts");
+				    break;
+			    }
 		    }
 	    }
+	    else
+	    {
+		    free(password);
+		    printf("\nUser not found: username\n");
+		    break;
+	    }
+    }
 
     if (fclose(fp) != 0)
     {
@@ -93,7 +104,10 @@ password:  /* incase wrong password is entered, prompt again */
 	    printf("Log in failed\n");
 	    return (-1);
     }
-    while(menu(&u1));
+    while(logged_in)
+    {
+	    logged_in = menu(&u1);
+    }
     return (0);
 }
 

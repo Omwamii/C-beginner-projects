@@ -10,24 +10,25 @@ void welcome(void)
 	printf("\n\n\t\t\t1.Create new account\n\t\t");
 	printf("\n\t\t\t2.Log in\n\t\t");
 	printf("\n\t\t\t3.Quit\n\n\n\t\t\tEnter your choice:");
-	scanf("%d", &choice);
+	do{
+		scanf("%d", &choice);
 
-	switch(choice)
-	{
-		case 1:
-			create_account();
-			break;
-		case 2:
-			if (login() == 0)
-				while (menu(&u1));
-			break;
-		case 3:
-			exit(0);
-		default:
-			printf("\n\t\t\t!!! Invalid choice (1 - 3) !!!\n");
-			return;
+		switch(choice)
+		{
+			case 1:
+				create_account();
+				break;
+			case 2:
+				login();
+				break;
+			case 3:
+				exit(0);
+			default:
+				printf("\n\t\t\t!!! Invalid choice (1 - 3) !!!\n");
+				break;
+		}
 
-	}
+	} while (choice < 1 || choice > 3);
 }
 
 int fetch_balance(int user_id)
