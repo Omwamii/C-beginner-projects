@@ -43,5 +43,6 @@ int set_uid(char *username);
 int get_uid(char *username);
 int credit_account(int u_id, int amount);
 int debit_account(int u_id, int amount);
-
+int fetch_balance(int user_id);
+void welcome(void);
 #endif

@@ -5,11 +5,11 @@
  */
 void account_success(void)
 {
-    system("cls");
+    system("clear");
     printf("\n\nPROCESSING DATA ...");
-    sleep(5);
+    sleep(4);
     printf("\n\nAccount created successfully!");
-    printf("\n Press enter to login");
+    printf("\n Press enter to login\n");
     getchar();
     login();
 }
@@ -24,8 +24,9 @@ int login(void)
     static int trials;
     FILE *fp;
     user u1;
-    int i = 0;
+    int i = 0, in = 0;
 
+    system("clear");
     fp = fopen("accounts.txt","r");
     if (fp == NULL)
     {
@@ -35,11 +36,12 @@ int login(void)
     printf(" ACCOUNT LOGIN \n");
     printf("*******************************************************************************\n");
     printf("==== LOG IN ====\n");
-    printf("USERNAME..");
+    printf("USERNAME: ");
     scanf("%s", username);
 
 password:  /* incase wrong password is entered, prompt again */
-    printf("\nPASSWORD..");
+    printf("\nPASSWORD: ");
+
     password = malloc(51);
     if (password  == NULL)
     {
@@ -60,31 +62,37 @@ password:  /* incase wrong password is entered, prompt again */
      password[i] = '\0';
 
     /* Check if user exists */
-    while (fread(&u1, sizeof(user),1, fp))
-    {
-	    if (strcmp(username,u1.username) == 0)
+	    if (find_user(username) == 0)
 	    {
 		    trials++;
 		    if (strcmp(password, u1.password) == 0)
 		    {
+			    in = 1;
 			    free(password);
 			    login_success();
-			    sleep(2);
+			    sleep(1);
+			    system("clear");
 			    display(username);
-			    break;
 		    }
-		    free(password);
-		    printf("Incorrect password!");
-		    if (trials < 4)
-			    goto password; //prompt user again to enter password
-        }
-    }
+		    else
+		    {
+			    free(password);
+			    printf("Incorrect password!");
+			    if (trials < 4)
+				    goto password; //prompt user again to enter password
+		    }
+	    }
+
     if (fclose(fp) != 0)
     {
 	    fprintf(stderr, "Unable to close file: accounts\n");
 	    return (-1);
     }
-    login_success();
+    if (!in)
+    {
+	    printf("Log in failed\n");
+	    return (-1);
+    }
     while(menu(&u1));
     return (0);
 }
@@ -94,7 +102,7 @@ password:  /* incase wrong password is entered, prompt again */
  */
 void login_success(void)
 {
-    system("cls");
+    system("clear");
     printf("Fetching account details.....\n");
     sleep(3);
     printf("\n\nLOGIN SUCCESSFUL....");
@@ -109,17 +117,18 @@ void logout(void)
 {
     int i;
 
-    system("cls");
+    system("clear");
     printf("\n\t<<<Updating system data>>>\t\n");
     printf("\n\tlogging out.....\t\n");
 
-    for (i = 0; i < 10; i++)
+    for (i = 0; i < 5; i++)
     {
-	    sleep(2);
+	    sleep(1);
 	    printf(".");
     }
     printf("\n*** You are logged out ***\n");
     sleep(2);
+    welcome();
 }
 
 /**
@@ -131,7 +140,7 @@ void logout(void)
 int withdraw(int user_id)
 {
 	int amnt;
-	system("cls");
+	system("clear");
 
 	printf("Enter amount to withdraw:: ");
 	while (1)

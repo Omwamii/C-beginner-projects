@@ -115,8 +115,8 @@ int credit_account(int u_id, int amount)
     int cash_in = 0, amnt = amount;
     size_t offset; /* file offset to set to write new amount correctly*/
 
-    system("cls");
-    fp = fopen("file.txt", "rb+");
+    system("clear");
+    fp = fopen("file.txt", "r+");
     if (fp == NULL) {
         printf("Error opening file!\n");
         return (-1);
@@ -124,7 +124,7 @@ int credit_account(int u_id, int amount)
 
     while (fread(&u, sizeof(user), 1, fp))
     {
-	    if (u.id == u_id)
+	    if (u.id == u_id && (fetch_balance(u.id) != -1))
 	    {
 		    u.money += amnt;
 		    offset = -(sizeof(u.money));
@@ -161,8 +161,8 @@ int debit_account(int u_id, int amount)
 	int cash_out = 0, amnt = amount;
 	long offset; /* file offset to set to write new amount correctly*/
 
-    	system("cls");
-    	fp = fopen("accounts.txt", "rb+");
+    	system("clear");
+    	fp = fopen("accounts.txt", "r+");
     	if (fp == NULL) {
         	printf("Error opening file!\n");
         	return (-1);
@@ -170,7 +170,7 @@ int debit_account(int u_id, int amount)
 
     	while (fread(&u, sizeof(user), 1, fp))
     	{
-	    	if (u.id == u_id)
+	    	if (u.id == u_id && (fetch_balance(u.id) != -1))
 	    	{
 			u.money -= amnt;
 		    	offset = -(long)(sizeof(u.money));
